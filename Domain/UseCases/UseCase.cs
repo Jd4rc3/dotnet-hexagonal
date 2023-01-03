@@ -1,6 +1,6 @@
 namespace Domain.UseCases;
 
-public abstract class UseCase<T, P>
+public abstract class UseCase<T, TP>
 {
-    public abstract T Apply(P type);
+    public abstract T Apply(TP type);
 }

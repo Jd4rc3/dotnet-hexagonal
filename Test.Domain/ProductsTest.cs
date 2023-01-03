@@ -24,8 +24,8 @@ public class ProductsTest
 
         var useCase = new CreateProductUseCase(_productRepository.Object);
 
-        var productCreated = await useCase.Create(product);
-        
+        var productCreated = await useCase.Apply(product);
+
         Assert.Equal(Build.Product().Name, productCreated.Name);
     }
 }

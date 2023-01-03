@@ -1,4 +1,7 @@
 using System.Text.Json.Serialization;
+using Domain.Models;
+using Domain.UseCases;
+using Domain.UseCases.CreateProductUseCase;
 
 namespace Api;
 
@@ -17,6 +20,8 @@ public class Startup
             .AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
+
+        services.AddScoped<UseCase<Task<Product>, Product>, CreateProductUseCase>();
 
         services.AddAutoMapper(typeof(Startup));
     }

@@ -3,7 +3,7 @@ using Domain.UseCases.CreateProductUseCase.Ports;
 
 namespace Domain.UseCases.CreateProductUseCase;
 
-public class CreateProductUseCase
+public class CreateProductUseCase : UseCase<Task<Product>, Product>
 {
     private readonly IProductRepository _productRepository;
 
@@ -12,7 +12,7 @@ public class CreateProductUseCase
         _productRepository = productRepository;
     }
 
-    public async Task<Product> Create(Product product)
+    public override async Task<Product> Apply(Product product)
     {
         return await _productRepository.AddAsync(product);
     }

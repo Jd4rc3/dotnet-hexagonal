@@ -16,6 +16,8 @@ public class ProductAdapter : IProductRepository
     {
         var newProduct = await _context.Product.AddAsync(product);
 
+        await _context.SaveChangesAsync();
+
         return newProduct.Entity;
     }
 }

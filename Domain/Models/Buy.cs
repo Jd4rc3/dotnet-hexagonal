@@ -10,5 +10,5 @@ public record Buy
 
     public string ClientName { get; set; }
 
-    public IEnumerable<Product> Products { get; set; }
+    public virtual ICollection<ProductBuy> Buys { get; set; }
 }

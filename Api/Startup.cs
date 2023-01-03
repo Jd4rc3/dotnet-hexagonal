@@ -2,6 +2,10 @@ using System.Text.Json.Serialization;
 using Domain.Models;
 using Domain.UseCases;
 using Domain.UseCases.CreateProductUseCase;
+using Domain.UseCases.CreateProductUseCase.Ports;
+using Infrastructure;
+using Infrastructure.Adapters;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api;
 
@@ -22,6 +26,10 @@ public class Startup
         services.AddSwaggerGen();
 
         services.AddScoped<UseCase<Task<Product>, Product>, CreateProductUseCase>();
+        services.AddScoped<IProductRepository, ProductAdapter>();
+
+        services.AddDbContext<Context>(options => options.UseSqlServer(Configuration.GetConnectionString("SqlServer"),
+            builder => builder.MigrationsAssembly("Infrastructure")));
 
         services.AddAutoMapper(typeof(Startup));
     }

@@ -11,20 +11,19 @@ namespace Api.Controllers;
 public class ProductController : ControllerBase
 {
     private readonly IMapper _mapper;
-    private readonly UseCase<Task<Product>, Product> _useCase;
 
-    public ProductController(UseCase<Task<Product>, Product> useCase, IMapper mapper)
+    public ProductController(IMapper mapper)
     {
-        _useCase = useCase;
         _mapper = mapper;
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateProductAsync(CreateProductDto createProductDto)
+    public async Task<ActionResult> CreateProductAsync([FromBody] CreateProductDto createProductDto,
+        [FromServices] UseCase<Task<Product>, Product> useCase)
     {
         var product = _mapper.Map<Product>(createProductDto);
 
-        await _useCase.Apply(product);
+        await useCase.Apply(product);
         // return CreatedAtAction()
         return Ok();
     }

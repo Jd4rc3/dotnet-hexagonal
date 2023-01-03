@@ -1,6 +1,6 @@
 namespace Domain.Models;
 
-public class Product
+public record Product
 {
     public int Id { get; set; }
 

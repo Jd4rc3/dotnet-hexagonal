@@ -6,6 +6,7 @@ using Domain.Models;
 using Domain.UseCases;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Test.Common;
 
 namespace Test.Api;
 
@@ -31,15 +32,25 @@ public class ProductControllerTest
     [Fact]
     public async Task CreateProduct()
     {
+        var product = Builder.GenerateProductsData(1).First();
         var productDto = new CreateProductDto { Max = 200, Min = 80, Name = "Apple", InInventory = 800 };
-        var controller = new ProductController(_mockUseCase.Object, _mapper);
-        var product = _mapper.Map<Product>(productDto) with { Id = 1, Enabled = true, InInventory = 800 };
+        ;
+        var controller = new ProductController(_mapper);
 
         _mockUseCase.Setup(useCase => useCase.Apply(new Product { Name = "Anything" })).ReturnsAsync(product);
 
-        var result = await controller.CreateProductAsync(productDto);
-
+        var result = await controller.CreateProductAsync(productDto, _mockUseCase.Object);
 
         Assert.IsType<OkResult>(result);
     }
+
+    // public void DeleteProduct()
+    // {
+    //     var product = Builder.GenerateProductsData(1).FirstOrDefault();
+    //     var controller = new ProductController(_mapper);
+    //
+    //     _mockUseCase.Setup(useCase => useCase.Apply(It.IsAny<Product>()))!.ReturnsAsync(product);
+    //     
+    //    var result = await controller. 
+    // }
 }

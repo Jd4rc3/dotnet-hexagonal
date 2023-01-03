@@ -1,7 +1,8 @@
 using Domain.UseCases.CreateProductUseCase;
 using Domain.UseCases.CreateProductUseCase.Ports;
+using Domain.UseCases.DeleteProductUseCase;
 using Moq;
-using Test.Domain.Helper;
+using Test.Common;
 
 namespace Test.Domain;
 
@@ -18,7 +19,7 @@ public class ProductsTest
     [Fact]
     public async Task Create()
     {
-        var product = Build.Product();
+        var product = Builder.GenerateData(1).FirstOrDefault();
 
         _productRepository.Setup(repo => repo.AddAsync(product)).ReturnsAsync(product);
 
@@ -26,6 +27,18 @@ public class ProductsTest
 
         var productCreated = await useCase.Apply(product);
 
-        Assert.Equal(Build.Product().Name, productCreated.Name);
+        Assert.Equal(product.Name, productCreated.Name);
+    }
+
+    [Fact]
+    public async Task Delete()
+    {
+        var product = Builder.GenerateData(1).FirstOrDefault();
+        _productRepository.Setup(repo => repo.RemoveAsync(product)).ReturnsAsync(product);
+        var useCase = new DeleteProductUseCase(_productRepository.Object);
+
+        var productDeleted = await useCase.Apply(product);
+
+        Assert.Equal(product, productDeleted);
     }
 }

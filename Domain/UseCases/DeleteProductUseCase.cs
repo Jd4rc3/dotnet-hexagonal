@@ -1,7 +1,7 @@
 using Domain.Models;
-using Domain.UseCases.CreateProductUseCase.Ports;
+using Domain.UseCases.Ports;
 
-namespace Domain.UseCases.DeleteProductUseCase;
+namespace Domain.UseCases;
 
 public class DeleteProductUseCase : UseCase<Task<Product>, Product>
 {

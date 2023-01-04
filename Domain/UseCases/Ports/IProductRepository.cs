@@ -1,6 +1,6 @@
 using Domain.Models;
 
-namespace Domain.UseCases.CreateProductUseCase.Ports;
+namespace Domain.UseCases.Ports;
 
 public interface IProductRepository
 {
@@ -13,4 +13,6 @@ public interface IProductRepository
     Task<List<Product>> FindAllAsync();
 
     Task<Product> UpdateAsync(Product product);
+
+    Task<IEnumerable<Product>> UpdateAsync(IEnumerable<Product> products);
 }

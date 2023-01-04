@@ -43,13 +43,19 @@ public class ProductAdapter : IProductRepository
 
     public async Task<Product> UpdateAsync(Product product)
     {
-        var oldProduct = _context.Product.FirstOrDefault(p => p.Id == product.Id);
-        if (oldProduct is null)
+        var productToUpdate = await _context.FindAsync<Product>(product.Id);
+
+        if (productToUpdate is null)
             throw new Exception("Product not found");
 
-        _context.Product.Update(product);
+        productToUpdate.Name = product.Name;
+        productToUpdate.Enabled = product.Enabled;
+        productToUpdate.Max = product.Max;
+        productToUpdate.Min = product.Min;
+        productToUpdate.InInventory = product.InInventory;
+
         await _context.SaveChangesAsync();
 
-        return product;
+        return productToUpdate;
     }
 }

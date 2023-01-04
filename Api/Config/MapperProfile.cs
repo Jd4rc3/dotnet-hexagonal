@@ -20,9 +20,8 @@ public class MapperProfile : Profile
         CreateMap<CreateProductDto, Product>().ReverseMap();
         CreateMap<ProductDto, Product>().ReverseMap();
         CreateMap<CreateProductBuyDto, ProductBuy>().ReverseMap();
-        CreateMap<PurchaseDto, Buy>().ReverseMap();
 
         CreateMap<PurchaseDto, Buy>().ForMember(entity => entity.Buys,
-            opt => opt.MapFrom(Map));
+            opt => opt.MapFrom(Map)).ReverseMap();
     }
 }

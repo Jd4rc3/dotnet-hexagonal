@@ -49,8 +49,3 @@ public class PurchaseUseCase : UseCase<Task<Buy>, Buy>
             throw new Exception("Product min quantity exceeded");
     }
 }
-
-public interface IBuyRepository
-{
-    Task<Buy> PurchaseAsync(Buy buy);
-}

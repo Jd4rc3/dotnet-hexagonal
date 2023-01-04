@@ -32,6 +32,7 @@ public class Startup
         services.AddScoped<UseCase<Task<List<Product>>, Product>, GetAllProductsUseCase>();
 
         services.AddScoped<UseCase<Task<Buy>, Buy>, PurchaseUseCase>();
+        services.AddScoped<UseCase<Task<List<Buy>>, int>, ShowHistoryUseCase>();
 
         services.AddScoped<IProductRepository, ProductAdapter>();
         services.AddScoped<IBuyRepository, BuyAdapter>();
@@ -39,7 +40,6 @@ public class Startup
         services.AddDbContext<Context>(options => options.UseSqlServer(Configuration.GetConnectionString("SqlServer"),
             builder => builder.MigrationsAssembly("Infrastructure")).EnableSensitiveDataLogging());
 
-        // DbContextOptionsBuilder.EnableSensitiveDataLogging
 
         services.AddAutoMapper(typeof(Startup));
 

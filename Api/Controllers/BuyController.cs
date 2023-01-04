@@ -26,4 +26,13 @@ public class BuyController : ControllerBase
 
         return Ok(_mapper.Map<PurchaseDto>(result));
     }
+
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult> ShowHistory([FromRoute] int id,
+        [FromServices] UseCase<Task<List<Buy>>, int> useCase)
+    {
+        var history = await useCase.Apply(id);
+
+        return Ok(_mapper.Map<List<PurchaseDto>>(history));
+    }
 }

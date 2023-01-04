@@ -1,9 +1,7 @@
 using Domain.Models;
+using Domain.UseCases;
 using Domain.UseCases.CreateProductUseCase;
-using Domain.UseCases.CreateProductUseCase.Ports;
-using Domain.UseCases.DeleteProductUseCase;
-using Domain.UseCases.GetProductUseCase;
-using Domain.UseCases.UpdateProductUseCase;
+using Domain.UseCases.Ports;
 using Moq;
 using Test.Common;
 

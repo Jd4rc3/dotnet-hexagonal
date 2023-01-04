@@ -3,9 +3,6 @@ using AutoMapper;
 using Domain.Models;
 using Domain.UseCases;
 using Domain.UseCases.CreateProductUseCase;
-using Domain.UseCases.DeleteProductUseCase;
-using Domain.UseCases.GetProductUseCase;
-using Domain.UseCases.UpdateProductUseCase;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;

@@ -2,10 +2,7 @@ using System.Text.Json.Serialization;
 using Domain.Models;
 using Domain.UseCases;
 using Domain.UseCases.CreateProductUseCase;
-using Domain.UseCases.CreateProductUseCase.Ports;
-using Domain.UseCases.DeleteProductUseCase;
-using Domain.UseCases.GetProductUseCase;
-using Domain.UseCases.UpdateProductUseCase;
+using Domain.UseCases.Ports;
 using Infrastructure;
 using Infrastructure.Adapters;
 using Microsoft.EntityFrameworkCore;
@@ -34,14 +31,19 @@ public class Startup
         services.AddScoped<UseCase<Task<Product>, Product>, GetProductUseCase>();
         services.AddScoped<UseCase<Task<List<Product>>, Product>, GetAllProductsUseCase>();
 
+        services.AddScoped<UseCase<Task<Buy>, Buy>, PurchaseUseCase>();
+
         services.AddScoped<IProductRepository, ProductAdapter>();
+        services.AddScoped<IBuyRepository, BuyAdapter>();
 
         services.AddDbContext<Context>(options => options.UseSqlServer(Configuration.GetConnectionString("SqlServer"),
-            builder => builder.MigrationsAssembly("Infrastructure")));
+            builder => builder.MigrationsAssembly("Infrastructure")).EnableSensitiveDataLogging());
+
+        // DbContextOptionsBuilder.EnableSensitiveDataLogging
 
         services.AddAutoMapper(typeof(Startup));
-        
-        services.AddControllers(options => { options.SuppressAsyncSuffixInActionNames = false; }); 
+
+        services.AddControllers(options => { options.SuppressAsyncSuffixInActionNames = false; });
     }
 
     public void Configure(WebApplication app, IWebHostEnvironment env)

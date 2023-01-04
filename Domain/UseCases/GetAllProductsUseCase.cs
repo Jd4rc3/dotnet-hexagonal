@@ -1,7 +1,7 @@
 using Domain.Models;
-using Domain.UseCases.CreateProductUseCase.Ports;
+using Domain.UseCases.Ports;
 
-namespace Domain.UseCases.GetProductUseCase;
+namespace Domain.UseCases;
 
 public class GetAllProductsUseCase : UseCase<Task<List<Product>>, Product>
 {

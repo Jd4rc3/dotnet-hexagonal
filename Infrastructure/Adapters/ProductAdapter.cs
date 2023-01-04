@@ -1,5 +1,5 @@
 using Domain.Models;
-using Domain.UseCases.CreateProductUseCase.Ports;
+using Domain.UseCases.Ports;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Adapters;
@@ -33,13 +33,14 @@ public class ProductAdapter : IProductRepository
 
     public async Task<Product> FindByIdAsync(Product product)
     {
-        return await _context.Product.FirstOrDefaultAsync(p => p.Id == product.Id);
+        return await _context.FindAsync<Product>(product.Id);
     }
 
     public async Task<List<Product>> FindAllAsync()
     {
         return await _context.Product.ToListAsync();
     }
+
 
     public async Task<Product> UpdateAsync(Product product)
     {
@@ -57,5 +58,14 @@ public class ProductAdapter : IProductRepository
         await _context.SaveChangesAsync();
 
         return productToUpdate;
+    }
+
+    public async Task<IEnumerable<Product>> UpdateAsync(IEnumerable<Product> products)
+    {
+        _context.UpdateRange(products);
+
+        await _context.SaveChangesAsync();
+
+        return products;
     }
 }

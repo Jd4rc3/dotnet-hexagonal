@@ -16,6 +16,8 @@ public class Startup
         Configuration = configuration;
     }
 
+    private readonly string _policyName = "CorsPolicy";
+
     private IConfiguration Configuration { get; }
 
     public void ConfigureServices(IServiceCollection services)
@@ -24,6 +26,16 @@ public class Startup
             .AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
+
+        services.AddCors(opt =>
+        {
+            opt.AddPolicy(name: _policyName, builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
 
         services.AddScoped<UseCase<Task<Product>, Product>, CreateProductUseCase>();
         services.AddScoped<UseCase<Task<Product>, Product>, UpdateProductUseCase>();
@@ -54,6 +66,8 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.UseCors(_policyName);
 
         app.UseHttpsRedirection();
 

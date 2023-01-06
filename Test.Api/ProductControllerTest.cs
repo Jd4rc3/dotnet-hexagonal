@@ -39,7 +39,7 @@ public class ProductControllerTest
 
         _mockUseCase.Setup(useCase => useCase.Apply(new Product { Name = "Anything" })).ReturnsAsync(product);
 
-        var result = await controller.CreateProductAsync(productDto, _mockUseCase.Object);
+        var result = await controller.CreateProductAsync(productDto, new[] { _mockUseCase.Object });
 
         Assert.IsType<OkResult>(result);
     }

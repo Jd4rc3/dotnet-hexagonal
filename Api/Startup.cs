@@ -3,24 +3,56 @@ using Domain.Models;
 using Domain.UseCases;
 using Domain.UseCases.CreateProductUseCase;
 using Domain.UseCases.Ports;
-using Infrastructure;
-using Infrastructure.Adapters;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api;
 
 public class Startup
 {
-    public Startup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
+    private readonly IConfiguration _configuration;
 
     private readonly string _policyName = "CorsPolicy";
 
-    private IConfiguration Configuration { get; }
+    private readonly WebApplication _app;
 
-    public void ConfigureServices(IServiceCollection services)
+    public Startup(string[] args, Action<IServiceCollection> dependencies)
+    {
+        var options = new WebApplicationOptions()
+        {
+             ApplicationName = "Api",
+             ContentRootPath = Path.GetFullPath("../../../../Api"),
+             EnvironmentName = "Development",
+             WebRootPath = Path.GetFullPath("../../../../Api"),
+        };
+        
+        var builder = WebApplication.CreateBuilder(options);
+        _configuration = builder.Configuration;
+        
+        dependencies.Invoke(builder.Services);
+        ConfigureServices(builder.Services);
+
+        _app = builder.Build();
+        ConfigureApp(_app, _app.Environment);
+    }
+
+    private void ConfigureApp(WebApplication app, IWebHostEnvironment env)
+    {
+        // Configure the HTTP request pipeline.
+        if (env.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseCors(_policyName);
+
+        app.UseHttpsRedirection();
+
+        app.UseAuthorization();
+
+        app.MapControllers();
+    }
+
+    private void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers()
             .AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -46,33 +78,20 @@ public class Startup
         services.AddScoped<UseCase<Task<Buy>, Buy>, PurchaseUseCase>();
         services.AddScoped<UseCase<Task<List<Buy>>, int>, ShowHistoryUseCase>();
 
-        services.AddScoped<IProductRepository, ProductAdapter>();
-        services.AddScoped<IBuyRepository, BuyAdapter>();
-
-        services.AddDbContext<Context>(options => options.UseSqlServer(Configuration.GetConnectionString("SqlServer"),
-            builder => builder.MigrationsAssembly("Infrastructure")).EnableSensitiveDataLogging());
-
 
         services.AddAutoMapper(typeof(Startup));
 
         services.AddControllers(options => { options.SuppressAsyncSuffixInActionNames = false; });
+        
+        
+        // services.AddDbContext<Context>(options =>
+        //     options.UseSqlServer(
+        //             "Server=127.0.0.1,1433;Database=store;User Id=sa;Password=Arc33456$;TrustServerCertificate=True;")
+        //         .EnableSensitiveDataLogging());
     }
 
-    public void Configure(WebApplication app, IWebHostEnvironment env)
+    public void StartAsync()
     {
-        // Configure the HTTP request pipeline.
-        if (env.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
-
-        app.UseCors(_policyName);
-
-        app.UseHttpsRedirection();
-
-        app.UseAuthorization();
-
-        app.MapControllers();
+        _app.Run();
     }
 }

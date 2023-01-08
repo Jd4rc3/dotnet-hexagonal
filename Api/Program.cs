@@ -1,12 +1,83 @@
-using Api;
+using System.Text.Json.Serialization;
+using Domain.Models;
+using Domain.UseCases;
+using Domain.UseCases.CreateProductUseCase;
+using Domain.UseCases.Ports;
 
-var builder = WebApplication.CreateBuilder(args);
+public class ApiAdapter
+{
+    private readonly IConfiguration _configuration;
 
-var startup = new Startup(builder.Configuration);
+    private readonly string _policyName = "CorsPolicy";
 
-startup.ConfigureServices(builder.Services);
-var app = builder.Build();
+    private readonly WebApplication _app;
 
-startup.Configure(app, app.Environment);
+    public ApiAdapter(string[] args, Action<IConfiguration> config, Action<IServiceCollection> options)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+        _configuration = builder.Configuration;
 
-app.Run();
+        options.Invoke(builder.Services);
+        ConfigureServices(builder.Services);
+
+        _app = builder.Build();
+        ConfigureApp(_app, _app.Environment);
+
+        StartAsync();
+    }
+
+    private void ConfigureApp(WebApplication app, IWebHostEnvironment env)
+    {
+        // Configure the HTTP request pipeline.
+        if (env.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseCors(_policyName);
+
+        app.UseHttpsRedirection();
+
+        app.UseAuthorization();
+
+        app.MapControllers();
+    }
+
+    private void ConfigureServices(IServiceCollection services)
+    {
+        services.AddControllers()
+            .AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
+
+        services.AddCors(opt =>
+        {
+            opt.AddPolicy(name: _policyName, builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
+
+        services.AddScoped<UseCase<Task<Product>, Product>, CreateProductUseCase>();
+        services.AddScoped<UseCase<Task<Product>, Product>, UpdateProductUseCase>();
+        services.AddScoped<UseCase<Task<Product>, Product>, DeleteProductUseCase>();
+        services.AddScoped<UseCase<Task<Product>, Product>, GetProductUseCase>();
+        services.AddScoped<UseCase<Task<List<Product>>, Product>, GetAllProductsUseCase>();
+
+        services.AddScoped<UseCase<Task<Buy>, Buy>, PurchaseUseCase>();
+        services.AddScoped<UseCase<Task<List<Buy>>, int>, ShowHistoryUseCase>();
+
+
+        services.AddAutoMapper(typeof(ApiAdapter));
+
+        services.AddControllers(options => { options.SuppressAsyncSuffixInActionNames = false; });
+    }
+
+    public Task StartAsync()
+    {
+        return _app.RunAsync();
+    }
+}
